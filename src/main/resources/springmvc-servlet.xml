@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- HandlerMapping -->
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+
+	<!-- HandlerAdapter -->
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+
+	<!-- ViewResolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 处理器 -->
+	<bean name="/hello" class="cn.gavin.springmvc.web.controller.HelloWorldController" />
+	<bean name="/hello1" class="cn.gavin.springmvc.web.controller.HelloWorldAbstractController" />
+	<bean name="/helloWithoutReturnModelAndView" class="cn.gavin.springmvc.web.controller.HelloWorldWithoutReturnModelAndViewController" />
+
+	<bean name="/helloWithPOST" class="cn.gavin.springmvc.web.controller.HelloWorldAbstractController">
+		<property name="supportedMethods" value="POST"></property>
+	</bean>
+	
+	<bean name="/helloRequireSession" class="cn.gavin.springmvc.web.controller.HelloWorldAbstractController">
+		<property name="requireSession" value="true"></property>
+	</bean>
+	 
+	 <bean name="/helloCache" class="cn.gavin.springmvc.web.controller.HelloWorldCacheController">
+	 	<property name="cacheSeconds" value="5"/>
+	 </bean>
+	 
+	 <bean name="/helloNoCache" class="cn.gavin.springmvc.web.controller.HelloWorldCacheController">
+        <property name="cacheSeconds" value="0"/>
+    </bean>
+    
+	<bean name="/forwardToServlet" class="org.springframework.web.servlet.mvc.ServletForwardingController">
+		<property name="servletName" value="ForwardingServlet"></property>
+	</bean>
+	
+	<bean name="/helloLastModified" class="cn.gavin.springmvc.web.controller.HelloWorldLastModifiedCacheController"/>
+
+	<bean name="/abstractCommand" class="cn.gavin.springmvc.web.controller.MyAbstractCommandController">
+        <!-- 也可以通过依赖注入 注入命令实现类 -->
+        <!-- property name="commandClass" value="cn.gavin.springmvc.model.UserModel"/-->	
+	</bean>
+</beans>
