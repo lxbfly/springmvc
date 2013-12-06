@@ -46,6 +46,6 @@
 
 	<bean name="/abstractCommand" class="cn.gavin.springmvc.web.controller.MyAbstractCommandController">
         <!-- 也可以通过依赖注入 注入命令实现类 -->
-        <!-- property name="commandClass" value="cn.gavin.springmvc.model.UserModel"/-->	
+        <!-- property name="commandClass" value="cn.gavin.springmvc.model.UserModel"/-->
 	</bean>
 </beans>

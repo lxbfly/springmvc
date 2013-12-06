@@ -7,6 +7,11 @@
 <title>Abstract Command</title>
 </head>
 <body>
+	<div>当我们在浏览器中输入“http://localhost/springmvc/abstractCommand?username=123&password=123”，会自动将请求参数username和password绑定到命令对象；绑定时按照JavaBean命名规范绑定；</div>
+	<br>
+	
+	<div>output result</div>
+	<hr />
 	${user.username }-${user.password }
 </body>
 </html>
