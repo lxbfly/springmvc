@@ -2,8 +2,10 @@
  
 主要是通过 "跟我学SpringMVC"系列博客进行学习和总结，代码主要来源博客中。
 
-相关Web Site : http://jinnianshilongnian.iteye.com/blog/1752171
+相关Web Site : http://sishuok.com/forum/blogCategory/showByCategory.html?categories_id=101&user_id=2
+				http://jinnianshilongnian.iteye.com/blog/1752171
 
+不錯的博客： http://sishuok.com/forum/blogAdmin/list.html?customer_id=10000001
 在线版目录
 第一章 Web MVC简介
 

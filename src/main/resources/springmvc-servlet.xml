@@ -48,4 +48,68 @@
         <!-- 也可以通过依赖注入 注入命令实现类 -->
         <!-- property name="commandClass" value="cn.gavin.springmvc.model.UserModel"/-->
 	</bean>
+	
+	<bean name="/simpleForm" class="cn.gavin.springmvc.web.controller.RegisterSimpleFormController">
+		<property name="formView" value="register" />
+		<property name="successView" value="redirect:/success" />
+	</bean>
+	
+	<bean name="/canCancelForm" class="cn.gavin.springmvc.web.controller.CanCancelRegisterSimpleFormController">
+        <property name="formView" value="register"/>
+        <property name="successView" value="redirect:/success"/>
+        
+        <property name="cancelParamKey" value="_cancel"/>
+        <property name="cancelView" value="redirect:/cancel"/>
+    </bean>
+    
+	<bean name="/success" class="cn.gavin.springmvc.web.controller.SuccessController" />
+	<bean name="/cancel" class="cn.gavin.springmvc.web.controller.CancelController"/>
+
+	<bean name="/infoFillWizard" class="cn.gavin.springmvc.web.controller.InfoFillWizardFormController">
+		<property name="pages">
+			<list>
+				<value>wizard/baseInfo</value>
+				<value>wizard/schoolInfo</value>
+				<value>wizard/workInfo</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean name="/parameterizableView" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="success" />
+	</bean>
+	<bean name="/index?" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/index1/*" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/index2/**" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/*.html" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/index3/*.html" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/*.htm" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test" />
+		<property name="suffix" value="test" />
+	</bean>
+	<bean name="/long/long" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test1"></property>
+	</bean>
+	<bean name="/long/**/abc" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test2" />
+	</bean>
+	<bean name="/long/**" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test3" />
+	</bean>
+	<bean name="/**" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test4"></property>
+	</bean>
+	
+	<bean id="userService" class="cn.gavin.springmvc.web.service.UserService"/>
+	<bean name="/user/**" class="cn.gavin.springmvc.web.controller.UserController">
+		<property name="userService" ref="userService"/>
+		<property name="createView" value="user/create"/>
+	    <property name="updateView" value="user/update"/>
+	    <property name="deleteView" value="user/delete"/>
+	    <property name="listView" value="user/list"/>
+	    <property name="redirectToListView" value="redirect:/user/list"/>
+	    <!-- 使用PropertiesMethodNameResolver来解析功能处理方法名 -->       
+	    <!--property name="methodNameResolver" ref="propertiesMethodNameResolver"/-->
+    </bean>
+   
 </beans>

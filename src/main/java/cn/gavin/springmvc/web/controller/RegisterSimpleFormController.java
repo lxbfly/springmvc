@@ -19,7 +19,7 @@ public class RegisterSimpleFormController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request) throws Exception {
         // return super.referenceData(request);
         HashMap<String, List<String>> map = new HashMap<String, List<String>>();
-        map.put("cityList", Arrays.asList("山东", "北京", "上海"));
+        map.put("cityList", Arrays.asList("Shandong", "Beijing", "Shuanghai"));
         return map;
     }
 
@@ -32,9 +32,9 @@ public class RegisterSimpleFormController extends SimpleFormController {
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        // return super.formBackingObject(request);
+        // return super.formBackingObject(request);s
         UserModel user = new UserModel();
-        user.setUsername("请输入用户名");
+        user.setUsername("please input username...");
         return user;
     }
 
