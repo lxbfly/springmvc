@@ -16,7 +16,7 @@ public class RegisterSimpleFormController extends SimpleFormController {
     }
 
     @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map<String, List<String>> referenceData(HttpServletRequest request) throws Exception {
         // return super.referenceData(request);
         HashMap<String, List<String>> map = new HashMap<String, List<String>>();
         map.put("cityList", Arrays.asList("Shandong", "Beijing", "Shuanghai"));

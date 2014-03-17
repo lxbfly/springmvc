@@ -100,6 +100,9 @@
 		<property name="prefix" value="test4"></property>
 	</bean>
 	
+	<bean name="/OrdinaryPolling" class="cn.gavin.springmvc.web.controller.connection.ConnectionController" />
+	<bean name="/ajaxRequest" class="cn.gavin.springmvc.web.controller.connection.ConnectionController" />
+	
 	<bean id="userService" class="cn.gavin.springmvc.web.service.UserService"/>
 	<bean name="/user/**" class="cn.gavin.springmvc.web.controller.UserController">
 		<property name="userService" ref="userService"/>
