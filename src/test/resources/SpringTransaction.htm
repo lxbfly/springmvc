@@ -1,0 +1,874 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+ 
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Spring事务传播特性实例解析 - 柳波 五期信息技术提高班
+        - 博客频道 - CSDN.NET</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="背景介绍&#160; &#160; &#160; &#160;&#160;目前系统正在进行代码重构前期预研工作，目标采用spring控制事务以减少开发代码量，提高开发效率。同时避免开发人员编码控制事务所带来的链接没有释放，事务没有提交，出现异常事务没有回滚的Bug。为保证系统能正确使用Spring控制事务，必须很好的理解其传播特性。在沟通中发现，好多人知道这个概念但是对于事务的实际传播行为往往模棱两可。基于上述原因，本文采用Demo实" />
+    <script src="http://static.blog.csdn.net/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js?v=1.1"></script>
+    <link rel="Stylesheet" type="text/css" href="http://static.blog.csdn.net/skin/dark1/css/style.css?v=1.1" />
+    <link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="/lb85858585/rss/list" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="http://static.blog.csdn.net/scripts/SyntaxHighlighter/styles/default.css" />
+
+</head>
+<body>
+    <script src="http://csdnimg.cn/pubnav/js/pub_topnav_2011.js" type="text/javascript"></script>
+    <div id="container">
+        <div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h1>
+                <a href="http://blog.csdn.net/liovey">柳波 五期信息技术提高班</a></h1>
+            <h2>用文字梳理生命 让分享联动你我 使知识创造价值</h2>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>
+                <li id="btnContents"><a href="http://blog.csdn.net/liovey?viewmode=contents"><span>
+                    <img src="http://static.blog.csdn.net/images/ico_list.gif">目录视图</span></a></li>
+                <li id="btnView"><a href="http://blog.csdn.net/liovey?viewmode=list"><span>
+                    <img src="http://static.blog.csdn.net/images/ico_summary.gif">摘要视图</span></a></li>
+                <li id="btnRss"><a href="http://blog.csdn.net/liovey/rss/list"><span>
+                    <img src="http://static.blog.csdn.net/images/ico_rss.gif">订阅</span></a></li>
+</ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "lb85858585";
+    var _blogger = username;
+    var blog_address = "http://blog.csdn.net/liovey";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";
+</script>
+
+        <div id="body">
+            <div id="main">
+                <div class="main">
+<div class="notice tracking-ad" data-mod='popu_3' > 
+
+<a href="http://huiyi.csdn.net/m/ticket/handsel_ticket/piao/mountain623/24/2013112779945" target="_blank">
+<font color=blue>2013中国大数据大会赠票申请 </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://hero.pongo.cn/Question/Details?ID=168&ExamID=163" target="_blank"><font color=red>文思海辉第一届在线编程大赛
+</font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/csdn_ask/article/details/16943685"target="_blank">
+<font color=blue>消灭0回答，赢下载分
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<a href="http://newsletter.csdn.net/show_book/show_book_list?type=5"target="_blank">
+<font color=red>订阅CSDN社区周刊，及时了解社区精华内容
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/16943989"target="_blank">
+<font color=blue>办公大师系列经典丛书 诚聘译者
+ </font></a>
+
+</div>                    <link href="http://static.blog.csdn.net/css/comment1.css" type="text/css" rel="stylesheet" />
+<link href="http://static.blog.csdn.net/css/style1.css" type="text/css" rel="stylesheet" />
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="/liovey/article/details/14149137">
+        Spring事务传播特性实例解析
+        </a></span>
+    </h3>
+</div>
+
+    <div class="article_manage">
+        <span class="link_categories">
+        分类：
+            <a href="/lb85858585/article/category/868034">开发语言</a> 
+        </span>
+    <span class="link_postdate">2013-11-05 01:08</span>
+    <span class="link_view" title="阅读次数">9309人阅读</span>
+    <span class="link_comments" title="评论次数"><a href="#comments">评论</a>(150)</span>
+    <span class="link_collect"><a href="javascript:void(0);" onclick="javascript:collectArticle('Spring事务传播特性实例解析','14149137');return false;" title="收藏">收藏</a></span>
+    <span class="link_report"><a href="#report"  onclick="javascript:report(14149137,2);return false;" title="举报">举报</a></span>
+    
+</div>
+
+    
+<div id="article_content" class="article_content">
+
+<p><span style="font-size:24px"><strong>背景介绍</strong></span></p>
+<p>&nbsp; &nbsp;<span style="white-space:pre"> </span>&nbsp; &nbsp;&nbsp;<span style="font-size:18px">目前系统正在进行代码重构前期预研工作，目标采用spring控制事务以减少开发代码量，提高开发效率。同时避免开发人员编码控制事务所带来的链接没有释放，事务没有提交，出现异常事务没有回滚的Bug。</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; &nbsp; &nbsp;为保证系统能正确使用<span style="font-size:18px">Spring</span>控制事务，必须很好的理解其传播特性。在沟通中发现，好多人知道这个概念但是对于事务的实际传播行为往往模棱两可。</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; &nbsp; &nbsp;基于上述原因，本文采用Demo<span style="font-size:18px">实例</span>的方式对事务的7大传播特性给出了解析。希望能明确大家对事务传播特性的认识，在以后的工作中成功使用。</span></p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<p><span style="font-size:24px"><strong>Demo说明</strong></span></p>
+<p><span style="white-space:pre"></span>&nbsp; &nbsp; &nbsp;<span style="font-size:18px">采用Junit4.10.0&#43;Spring3.2.1&#43;Spring JDBCTemplate，通过注解方式配置事务，代码层次包括主测试类，两个Service对象，事务在Service开启。</span></p>
+<p style="text-align:center"><span style="font-size:18px"><span style="white-space:pre"><img src="http://img.blog.csdn.net/20131104231445781?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGlvdmV5/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></span>&nbsp;&nbsp;</span></p>
+<p><span style="font-size:24px"><strong><br>
+</strong></span></p>
+<p><span style="font-size:24px"><strong>概念</strong></span></p>
+<p><span style="white-space:pre"></span><span style="font-size:18px">本地事务</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; &nbsp; &nbsp; &nbsp;数据库事务，默认事务为自动提交，因此如果一个业务逻辑类中有多次数据库操作将无法保证事务的一致性。<span style="white-space:pre"></span></span></p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<p><span style="font-size:18px">Spring事务</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; &nbsp; &nbsp; &nbsp;对本地事务操作的一次封装，相当于把使用JDBC代码开启、提交、回滚事务进行了封装。</span></p>
+<p><span style="font-size:18px">上述两个概念会在demo中用到，以方便大家理解代码。</span></p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<p><span style="font-size:18px">传播特性</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span><span style="white-space:pre"></span>&nbsp; &nbsp; &nbsp; &nbsp;该特性是保证事务是否开启，业务逻辑是否使用同一个事务的保证。当事务在传播过程中会受其影响。其传播特性包括：</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; 1、Propagation.REQUIRED</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"><span style="font-size:18px">方法被调用时自动</span>开启事务，在事务范围内使用则使用同一个事务，否则开启新事务</span>。&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;</span></p>
+<p><span style="font-size:18px">&nbsp; 2、Propagation.REQUIRES_NEW</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre">无论何时自身都会开启事务</span></span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; 3、Propagation.SUPPORTS</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre">自身不会开启事务，在事务范围内则使用相同事务，否则不使用事务</span></span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; 4、Propagation.NOT_SUPPORTED</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre">自身不会开启事务，在事务范围内使用挂起事务，运行完毕恢复事务</span></span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; 5、Propagation.MANDATORY</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre">自身不开启事务，必须在事务环境使用否则报错</span></span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; 6、Propagation.NEVER</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre">自身不会开启事务，在事务范围使用抛出异常</span></span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>&nbsp; 7、Propagation.NESTED</span></p>
+<p><span style="font-size:18px">如果一个活动的事务存在，则运行在一个嵌套的事务中. 如果没有活动事务, 则按TransactionDefinition.PROPAGATION_REQUIRED 属性执行。需要JDBC3.0以上支持。</span></p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<p><span style="font-size:24px"><strong>实例Demo</strong></span></p>
+<p><span style="white-space:pre"><span style="font-size:24px"></span><span style="font-size:18px">Propagation.REQUIRED</span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"><span style="white-space:pre"></span>测试入口代码</span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<pre name="code" class="java"><span style="font-size:14px">//会开启事务，在事务范围内使用则使用同一个事务，否则开启新事务
+@Test
+public void testRequires(){
+	sService.addStudent();
+}</span></pre>
+<p></p>
+<p><span style="white-space:pre"><span style="font-size:18px"><span style="white-space:pre"></span>Service代码</span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<pre name="code" class="java">@Transactional(propagation = Propagation.REQUIRED)
+public void addStudent(){
+<span style="white-space:pre">	</span>String sql = &quot;insert into student(name) values('st0')&quot;;
+	jdbcTemplate.execute(sql);
+	tService.addTeacher();
+	throw new RuntimeException();
+}</pre>
+<pre name="code" class="java">@Transactional(propagation = Propagation.REQUIRES)
+public void addTeacher(){
+        String sql = &quot;insert into teacher(name) values ('t5')&quot;;
+        jdbcTemplate.execute(sql);
+}</pre>
+<span style="white-space:pre"></span><span style="font-size:18px">经测试无论在tService还是sService如果不抛出异常，那么数据提交成功，如果抛出异常，数据提交失败。这说明tService和sService使用的是同一个事务，并且只要方法被调用就开启事务。</span>
+<p></p>
+<p><br>
+</p>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px">Propagation.<span style="font-size:18px">REQUIRES_NEW</span></span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"><span></span>测试入口代码</span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<pre name="code" class="java">//无论何时自身都会开启事务
+@Test
+public void testRequiresNew(){
+      sService.addStudent5();
+}</pre>
+<p></p>
+<p><span style="white-space:pre"><span style="font-size:18px"><span></span>Service代码</span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<pre name="code" class="java">@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void addStudent5(){
+       String sql = &quot;insert into student(name) values('st5')&quot;;
+       jdbcTemplate.execute(sql);
+       tService.addTeacher5();
+       throw new RuntimeException();
+}</pre>
+<pre name="code" class="java">@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void addTeacher5(){
+       String sql = &quot;insert into teacher(name) values ('t5')&quot;;
+       jdbcTemplate.execute(sql);
+}
+</pre>
+<p><span style="font-size:18px">经测试如果在addStudent5中抛出异常，学生数据不能正确提交，教师信息被正确提交。说明sService和tService是在两个独立的事务中运行，并且只要方法被调用就开启事务。</span></p>
+<p><br>
+</p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span></span></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px">Propagation.<span style="font-size:18px"><span style="font-size:18px">SUPPORTS</span></span></span></span></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px"><span></span>测试入口代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">//自身不会开启事务，在事务范围内则使用相同事务，否则不使用事务
+@Test
+public void testSupport(){
+       sService.addStudent6();
+}       </pre>
+<p style="font-size:18px; white-space:pre"></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px"><span></span>Service代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">@Transactional(propagation = Propagation.SUPPORTS)
+public void addStudent6(){
+       String sql = &quot;insert into student(name) values('st6')&quot;;
+       jdbcTemplate.execute(sql);
+       tService.addTeacher6();
+       throw new RuntimeException();
+}       </pre>
+<pre name="code" class="java">@Transactional(propagation = Propagation.SUPPORTS)
+public void addTeacher6(){
+       String sql = &quot;insert into teacher(name) values ('t6')&quot;;
+       jdbcTemplate.execute(sql);
+}
+</pre>
+<p><span style="font-size:18px">经测试如果在addStudent6中抛出异常，学生数据和教师数据都被正确提交。说明sService和tService没有被spring管理和开启事务，而是使用了本地事务，由于本地事务默认自动提交因此数据都提交成功，但它们使用的却不是同一个事务，一旦出现异常将导致数据的不一致。</span></p>
+<p><span style="font-size:18px; white-space:pre"><br>
+</span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px">Propagation.<span style="font-size:18px">NOT_SUPPORTED</span></span></span></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px"><span></span>测试入口代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">//自身不会开启事务，在事务范围内使用挂起事务，运行完毕恢复事务
+@Test
+public void testNotSupport(){
+       sService.addStudent4();
+}       </pre>
+<p style="font-size:18px; white-space:pre"></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px"><span></span>Service代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">@Transactional(propagation = Propagation.NOT_SUPPORTED)
+public void addStudent4(){
+       String sql = &quot;insert into student(name) values('st4')&quot;;
+       jdbcTemplate.execute(sql);
+       throw new RuntimeException();
+}       </pre>
+<span style="font-size:18px">经测试如果在addStudent4中抛出异常，学生数据正确提交。说明sService没有被spring管理和开启事务，而是使用了本地事务，由于本地事务默认自动提交因此数据都提交成功。</span>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px">测试入口代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">//自身不会开启事务，在事务范围内使用挂起事务，运行完毕恢复事务
+@Test
+public void testNotSupport1(){
+       sService.addStudent();
+}       </pre>
+<p style="font-size:18px; white-space:pre"></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px"><span></span>Service代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">@Transactional(propagation = Propagation.REQUIRED)
+public void addStudent(){
+       String sql = &quot;insert into student(name) values('st0')&quot;;
+       jdbcTemplate.execute(sql);
+       tService.addTeacher4();
+}       </pre>
+<pre name="code" class="java">@Transactional(propagation = Propagation.NOT_SUPPORTED)
+public void addTeacher4(){
+       String sql = &quot;insert into teacher(name) values ('t4')&quot;;
+       jdbcTemplate.execute(sql);
+       throw new RuntimeException();
+}
+       </pre>
+<p><span style="font-size:18px">经测试如果在addTeacher4中抛出异常，学生数据提交失败，教师数据提交成功。说明sService开启了事务，tService没有开启事务，而是使用了本地事务。</span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"><span style="font-size:18px"><br>
+</span></span></span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px">Propagation.<span style="font-size:18px">MANDATORY</span></span></span></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px"><span></span>测试入口代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">//自身不开启事务，必须在事务环境使用否则报错
+@Test
+public void testMandatory(){
+       sService.addStudent1();
+}       </pre>
+<p style="font-size:18px; white-space:pre"></p>
+<p style="font-size:18px; white-space:pre"><span><span style="font-size:18px"><span></span>Service代码</span></span></p>
+<p style="font-size:18px; white-space:pre"><span></span></p>
+<pre name="code" class="java">@Transactional(propagation = Propagation.MANDATORY)
+public void addStudent1(){
+       String sql = &quot;insert into student(name) values('st1')&quot;;
+       jdbcTemplate.execute(sql);
+}       </pre>
+<span style="font-size:18px; white-space:pre"><span></span>经测试代码报错。</span>
+<p><span style="font-size:18px">org.springframework.transaction.IllegalTransactionStateException: No existing transaction found for transaction marked with propagation 'mandatory'，没有找到事务环境。</span></p>
+<p><span style="white-space:pre"><span style="font-size:18px"><br>
+</span></span></p>
+<p style="font-size:18px"><span style="white-space:pre"><span style="font-size:18px"></span></span></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span><span style="font-size:18px">Propagation.<span style="font-size:18px">NEVER</span></span></span></span></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span><span style="font-size:18px"><span></span>测试入口代码</span></span></span></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span></span></span></p>
+<pre name="code" class="java"><span style="font-size:14px">//自身不会开启事务，在事务范围使用抛出异常
+@Test
+public void testNever(){
+       sService.addStudent();
+}</span></pre>
+<p style="font-size:18px; white-space:pre"></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span><span style="font-size:18px"><span></span>Service代码</span></span></span></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span></span></span></p>
+<pre name="code" class="java"><span style="font-size:14px">@Transactional(propagation = Propagation.REQUIRED)
+public void addStudent(){
+       String sql = &quot;insert into student(name) values('st0')&quot;;
+       jdbcTemplate.execute(sql);
+       tService.addTeacher3();
+}</span></pre>
+<pre name="code" class="java"><span style="font-size:14px">@Transactional(propagation = Propagation.NEVER)
+public void addTeacher3(){
+       String sql = &quot;insert into teacher(name) values ('t3')&quot;;
+       jdbcTemplate.execute(sql);
+}</span><span style="font-size:18px">
+</span></pre>
+<span style="font-size:18px"><span style="font-size:18px; white-space:pre"><span></span>经测试代码报错，由于sService开启了事务，当调用sService方法时由于其传播特性为never，因此报存在事务错误。</span></span>
+<p style="font-size:18px"></p>
+<p style="font-size:18px">org.springframework.transaction.IllegalTransactionStateException: Existing transaction found for transaction marked with propagation 'never'</p>
+<p style="font-size:18px"><span style="white-space:pre"><span style="font-size:18px"><br>
+</span></span></p>
+<p style="font-size:18px"></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span>Propagation.<span style="font-size:18px">NESTED</span></span></span></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span></span>测试入口代码</span></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span></span></span></p>
+<pre name="code" class="java">//如果没有事务环境其特性同Propagation.REQUIRED,否则嵌套运行事务
+@Test
+public void testNested(){
+       sService.addStudent2();
+}</pre>
+<p style="font-size:18px; white-space:pre"></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span></span>Service代码</span></p>
+<p style="font-size:18px; white-space:pre"><span style="font-size:18px"><span></span></span></p>
+<pre name="code" class="java">@Transactional(propagation = Propagation.NESTED)
+public void addStudent2(){
+       String sql = &quot;insert into student(name) values('st2')&quot;;
+       jdbcTemplate.execute(sql);
+       tService.addTeacher2();
+       throw new RuntimeException();
+}</pre>
+<pre name="code" class="java">@Transactional(propagation = Propagation.NESTED)
+public void addTeacher2(){
+       String sql = &quot;insert into teacher(name) values ('t2')&quot;;
+       jdbcTemplate.execute(sql);
+}
+</pre>
+<p><span style="font-size:18px; white-space:pre"><br>
+</span></p>
+<p><span style="font-size:18px; white-space:pre">经测试代码报错，教师数据和学生数据都没有提交成功。说明其按照REQUIRED特性运行。对于嵌套事务，</span><span style="font-size:18px">大家可以模拟两个数据源，一方的失败不会影响另一方。</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre">以上是所有demo解析。完整的测试代码请在：</span><a target="_blank" target="_blank" href="http://download.csdn.net/detail/lb85858585/6503031">Spring事务传播特性</a>下载。</span></p>
+<p><span style="font-size:18px">另：</span></p>
+<p><span style="font-size:18px"><span style="white-space:pre"></span>大家感兴趣SpringAOP入门和原理，可以在<a target="_blank" target="_blank" href="http://download.csdn.net/detail/lb85858585/6503033">SpringAOP</a>下载。</span></p>
+<p style="font-size:18px"><span style="font-size:18px"><br>
+</span><br>
+</p>
+<p style="font-size:18px"><span style="white-space:pre"><span style="font-size:18px"><br>
+<span style="white-space:pre"></span></span></span></p>
+
+</div>
+
+
+
+<!-- Baidu Button BEGIN -->
+<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare" style="float: right;">
+<a class="bds_qzone"></a>
+<a class="bds_tsina"></a>
+<a class="bds_tqq"></a>
+<a class="bds_renren"></a>
+<a class="bds_t163"></a>
+<span class="bds_more">更多</span>
+<a class="shareCount"></a>
+</div>
+<!-- Baidu Button END -->
+
+
+<!--192.168.100.33-->
+<div class="article_next_prev">
+            <li class="prev_article"><span>上一篇：</span><a href="/liovey/article/details/9173931">EasyUI之DataGrid使用</a></li>
+</div>
+
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=1536434" ></script>
+<script type="text/javascript" id="bdshell_js"></script>
+<script type="text/javascript">
+    document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+</script>
+<!-- Baidu Button END -->
+
+        <div id="digg" ArticleId="14149137">
+            <dl id="btnDigg" class="digg digg_disable">
+                <dt>顶</dt>
+                <dd>25</dd>
+            </dl>
+            <dl id="btnBury" class="digg digg_disable">
+                <dt>踩</dt>
+                <dd>2</dd>
+            </dl>
+        </div>
+</div>
+    <div id="ad_cen">
+        <script type="text/javascript">            BAIDU_CLB_SLOT_ID = "117306";</script>
+        <script type="text/javascript" src="http://cbjs.baidu.com/js/o.js"></script>
+    </div>
+    <script type="text/javascript">
+        //new Ad(4, 'ad_cen');
+    </script>
+<div id="comment_title" class="panel_head">
+    查看评论<a name="comments"></a></div>
+<div id="comment_list">
+</div>
+<div id="comment_bar">
+</div>
+<div id="comment_form">
+</div>
+<div class="announce">
+    * 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '14149137';
+    var commentscount = 150;
+    var islock = false
+</script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/comment.js"></script>
+    <div id="ad_bot">
+    </div>
+    <script type="text/javascript">
+    new Ad(5, 'ad_bot');
+    </script>
+<div id="report_dialog">
+</div>
+<div id="d-top" style="display: none;">
+    <a id="d-top-a" href="#" title="回到顶部">
+        <img src="http://static.blog.csdn.net/images/top.png" alt="TOP" /></a>
+</div>
+<script type="text/javascript">
+    $(function ()
+    {
+        var d_top = $('#d-top');
+        document.onscroll = function ()
+        {
+            var scrTop = (document.body.scrollTop || document.documentElement.scrollTop);
+            if (scrTop > 500)
+            {
+                d_top.show();
+            } else
+            {
+                d_top.hide();
+            }
+        }
+        $('#d-top-a').click(function ()
+        {
+            scrollTo(0, 0);
+            this.blur();
+            return false;
+        });
+    });
+  
+</script>
+<style type="text/css">
+    .tag_list
+    {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border: 1px solid #D7CBC1;
+        color: #000000;
+        font-size: 12px;
+        line-height: 20px;
+        list-style: none outside none;
+        margin: 10px 2% 0 1%;
+        padding: 1px;
+    }
+    .tag_list h5
+    {
+        background: none repeat scroll 0 0 #E0DBD3;
+        color: #47381C;
+        font-size: 12px;
+        height: 24px;
+        line-height: 24px;
+        padding: 0 5px;
+        margin: 0;
+    }
+    .tag_list h5 a
+    {
+        color: #47381C;
+    }
+    .classify
+    {
+        margin: 10px 0;
+        padding: 4px 12px 8px;
+    }
+    .classify a
+    {
+        margin-right: 20px;
+        white-space: nowrap;
+    }
+</style>
+<div class="tag_list">
+    <h5>
+        <a href="http://www.csdn.net/tag/" target="_blank">核心技术类目</a></h5>
+    <div class="classify">
+        <a title="全部主题" href="http://www.csdn.net/tag" target="_blank" onclick="LogClickCount(this,336);">
+            全部主题</a> <a title="数据挖掘" href="http://www.csdn.net/tag/数据挖掘" target="_blank" onclick="LogClickCount(this,336);">
+                数据挖掘</a> <a title="SOA" href="http://www.csdn.net/tag/soa" target="_blank" onclick="LogClickCount(this,336);">
+                    SOA</a> <a title="UML" href="http://www.csdn.net/tag/uml" target="_blank" onclick="LogClickCount(this,336);">
+                        UML</a> <a title="开放平台" href="http://www.csdn.net/tag/开放平台" target="_blank" onclick="LogClickCount(this,336);">
+                            开放平台</a> <a title="HTML5" href="http://www.csdn.net/tag/HTML5" target="_blank" onclick="LogClickCount(this,336);">
+                                HTML5</a> <a title="开源" href="http://www.csdn.net/tag/开源" target="_blank" onclick="LogClickCount(this,336);">
+                                    开源</a> <a title="移动开发" href="http://www.csdn.net/tag/移动开发" target="_blank" onclick="LogClickCount(this,336);">
+                                        移动开发</a> <a title="iOS" href="http://www.csdn.net/tag/iOS" target="_blank" onclick="LogClickCount(this,336);">
+                                            iOS</a> <a title="Android" href="http://www.csdn.net/tag/android" target="_blank"
+                                                onclick="LogClickCount(this,336);">Android</a>
+        <a title="移动游戏" href="http://www.csdn.net/tag/移动游戏" target="_blank" onclick="LogClickCount(this,336);">
+            移动游戏</a> <a title="Windows Phone" href="http://www.csdn.net/tag/Windows Phone" target="_blank"
+                onclick="LogClickCount(this,336);">Windows Phone</a> <a title="JavaScript" href="http://www.csdn.net/tag/JavaScript"
+                    target="_blank" onclick="LogClickCount(this,336);">JavaScript</a> <a title="CSS"
+                        href="http://www.csdn.net/Tag/CSS" target="_blank" onclick="LogClickCount(this,336);">
+                        CSS</a> <a title="游戏引擎" href="http://www.csdn.net/tag/游戏引擎" target="_blank" onclick="LogClickCount(this,336);">
+                            游戏引擎</a> <a title="云计算" href="http://www.csdn.net/tag/云计算" target="_blank" onclick="LogClickCount(this,336);">
+                                云计算</a> <a title="大数据" href="http://www.csdn.net/tag/大数据" target="_blank" onclick="LogClickCount(this,336);">
+                                    大数据</a> <a title="Hadoop" href="http://www.csdn.net/tag/Hadoop" target="_blank" onclick="LogClickCount(this,336);">
+                                        Hadoop</a> <a title="OpenStack" href="http://www.csdn.net/tag/OpenStack" target="_blank"
+                                            onclick="LogClickCount(this,336);">OpenStack</a>
+        <a title="云平台" href="http://www.csdn.net/tag/云平台" target="_blank" onclick="LogClickCount(this,336);">
+            云平台</a> <a title="PHP" href="http://www.csdn.net/tag/PHP" target="_blank" onclick="LogClickCount(this,336);">
+                PHP</a> <a title="MongoDB" href="http://www.csdn.net/tag/MongoDB" target="_blank"
+                    onclick="LogClickCount(this,336);">MongoDB</a> <a title="JSON" href="http://www.csdn.net/tag/JSON"
+                        target="_blank" onclick="LogClickCount(this,336);">JSON</a> <a title="Xcode" href="http://www.csdn.net/tag/Xcode"
+                            target="_blank" onclick="LogClickCount(this,336);">Xcode</a>
+        <a title="Node.js" href="http://www.csdn.net/tag/Node.js" target="_blank" onclick="LogClickCount(this,336);">
+            Node.js</a> <a title="前端开发" href="http://www.csdn.net/tag/前端开发" target="_blank" onclick="LogClickCount(this,336);">
+                前端开发</a> <a title="神经网络" href="http://www.csdn.net/tag/神经网络" target="_blank" onclick="LogClickCount(this,336);">
+                    神经网络</a> <a title="安全" href="http://www.csdn.net/tag/安全" target="_blank" onclick="LogClickCount(this,336);">
+                        安全</a> <a title="Java" href="http://www.csdn.net/tag/Java" target="_blank" onclick="LogClickCount(this,336);">
+                            Java</a> <a title=".NET" href="http://www.csdn.net/tag/.NET" target="_blank" onclick="LogClickCount(this,336);">
+                                .NET</a> <a title="MySQL" href="http://www.csdn.net/tag/MySQL" target="_blank" onclick="LogClickCount(this,336);">
+                                    MySQL</a> <a title="textview" href="http://www.csdn.net/tag/textview" target="_blank"
+                                        onclick="LogClickCount(this,336);">textview</a>
+        <a title="BigTable" href="http://www.csdn.net/tag/BigTable" target="_blank" onclick="LogClickCount(this,336);">
+            BigTable</a> <a title="web框架" href="http://www.csdn.net/tag/web框架" target="_blank"
+                onclick="LogClickCount(this,336);">web框架</a> <a title="SQL" href="http://www.csdn.net/tag/SQL"
+                    target="_blank" onclick="LogClickCount(this,336);">SQL</a> <a title="Redis" href="http://www.csdn.net/tag/Redis"
+                        target="_blank" onclick="LogClickCount(this,336);">Redis</a> <a title="CouchDB" href="http://www.csdn.net/tag/CouchDB"
+                            target="_blank" onclick="LogClickCount(this,336);">CouchDB</a>
+        <a title="Linux" href="http://www.csdn.net/tag/Linux" target="_blank" onclick="LogClickCount(this,336);">
+            Linux</a> <a title="可穿戴计算" href="http://www.csdn.net/tag/可穿戴计算" target="_blank" onclick="LogClickCount(this,336);">
+                可穿戴计算</a> <a title="NoSQL" href="http://www.csdn.net/tag/NoSQL" target="_blank" onclick="LogClickCount(this,336);">
+                    NoSQL</a> <a title="Ruby" href="http://www.csdn.net/tag/Ruby" target="_blank" onclick="LogClickCount(this,336);">
+                        Ruby</a> <a title="API" href="http://www.csdn.net/tag/API" target="_blank" onclick="LogClickCount(this,336);">
+                            API</a> <a title="GPL" href="http://www.csdn.net/tag/GPL" target="_blank" onclick="LogClickCount(this,336);">
+                                GPL</a> <a title="XAML" href="http://www.csdn.net/tag/XAML" target="_blank" onclick="LogClickCount(this,336);">
+                                    XAML</a> <a title="ASP.NET" href="http://www.csdn.net/tag/ASP.NET" target="_blank"
+                                        onclick="LogClickCount(this,336);">ASP.NET</a> <a title="前端开发" href="http://www.csdn.net/tag/前端开发"
+                                            target="_blank" onclick="LogClickCount(this,336);">前端开发</a>
+        <a title="虚拟化" href="http://www.csdn.net/tag/虚拟化" target="_blank" onclick="LogClickCount(this,336);">
+            虚拟化</a> <a title="框架" href="http://www.csdn.net/tag/框架" target="_blank" onclick="LogClickCount(this,336);">
+                框架</a> <a title="机器学习" href="http://www.csdn.net/tag/机器学习" target="_blank" onclick="LogClickCount(this,336);">
+                    机器学习</a> <a title="数据中心" href="http://www.csdn.net/tag/数据中心" target="_blank" onclick="LogClickCount(this,336);">
+                        数据中心</a> <a title="IE10" href="http://www.csdn.net/tag/IE10" target="_blank" onclick="LogClickCount(this,336);">
+                            IE10</a> <a title="敏捷" href="http://www.csdn.net/tag/敏捷" target="_blank" onclick="LogClickCount(this,336);">
+                                敏捷</a> <a title="集群" href="http://www.csdn.net/tag/集群" target="_blank" onclick="LogClickCount(this,336);">
+                                    集群</a>
+    </div>
+</div>
+
+                    <div class="clear">
+                    </div>
+                </div>
+            </div>
+            <div id="side">
+    <div class="side">
+<div id="custom_column_20642108" class="panel">
+<ul class="panel_head"><span>个人邮箱</span></ul>
+<ul class="panel_body">
+
+<a target="_blank" href="http://mail.163.com/share/mail2me.htm#email=108098056053056053104064049054051046099111109" style="text-decoration:none"><img src="http://avatar.csdn.net/2/E/0/3_lb85858585.jpg" alt="给我写信"></a>
+
+</ul>
+</div><div id="panel_Profile" class="panel">
+<ul class="panel_head"><span>个人资料</span></ul>
+<ul class="panel_body profile">
+<div id="blog_userface">
+    <a href="http://my.csdn.net/lb85858585" target="_blank">
+    <img src="http://avatar.csdn.net/2/E/0/1_lb85858585.jpg" title="访问我的空间" style="max-width:90%"/>
+    </a>
+    <br />
+    <span><a href="http://my.csdn.net/lb85858585" class="user_name" target="_blank">lb85858585</a></span>
+</div>
+<div class="interact">
+<a href="javascript:void(0);" class="attent" id="span_add_follow" title="[加关注]"></a>
+<a href="javascript:void(0);" class="letter" onclick="loginto(1)" title="[发私信]"></a>
+</div>
+<div id="blog_medal">
+</div>
+<ul id="blog_rank">
+    <li>访问：<span>60738次</span></li>
+    <li>积分：<span>2322分</span></li>
+    <li>排名：<span>第3843名</span></li>
+</ul>
+<ul id="blog_statistics">
+    <li>原创：<span>105篇</span></li>
+    <li>转载：<span>18篇</span></li>
+    <li>译文：<span>0篇</span></li>
+    <li>评论：<span>539条</span></li>
+</ul>
+</ul>
+</div>
+
+
+<div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search" target="_blank">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字" /></span>
+        <input id="btnSubmit" type="submit" value="搜索" title="search in blog" />
+        <input type="hidden" name="q" id="inputQ" />
+        <input type="hidden" name="t" value="blog" />
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div><div id="panel_Category" class="panel">
+<ul class="panel_head"><span>文章分类</span></ul>
+<ul class="panel_body">
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/1120239">项目管理</a><span>(3)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/1153644">架构设计</a><span>(5)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/866375">基本功</a><span>(30)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/868034">开发语言</a><span>(27)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/888239">前台技术</a><span>(6)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/1059936">数据库</a><span>(14)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/1143401">常见错误</a><span>(8)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/1157502">Linux</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/liovey/article/category/946578">个人总结</a><span>(13)</span>
+</li>
+</ul>
+</div><div id="panel_Archive" class="panel">
+<ul class="panel_head"><span>文章存档</span></ul>
+<ul class="panel_body">
+<div id="archive_list">
+<!--归档统计-->
+<li><a href="http://blog.csdn.net/liovey/article/month/2013/11">2013年11月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2013/06">2013年06月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2013/04">2013年04月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2013/03">2013年03月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2013/02">2013年02月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2013/01">2013年01月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/12">2012年12月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/11">2012年11月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/10">2012年10月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/09">2012年09月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/08">2012年08月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/07">2012年07月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/06">2012年06月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/05">2012年05月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/04">2012年04月</a><span>(9)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/03">2012年03月</a><span>(8)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/02">2012年02月</a><span>(22)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2012/01">2012年01月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2011/12">2011年12月</a><span>(30)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2011/11">2011年11月</a><span>(6)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2011/10">2011年10月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2011/09">2011年09月</a><span>(10)</span></li><li><a href="http://blog.csdn.net/liovey/article/month/2011/08">2011年08月</a><span>(3)</span></li>
+</div>
+</ul>
+</div>
+<div id="hotarticls" class="panel">
+<ul class="panel_head"><span>阅读排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="/liovey/article/details/14149137" title="Spring事务传播特性实例解析">Spring事务传播特性实例解析</a><span>(9288)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7288983" title="JAVA5线程池使用">JAVA5线程池使用</a><span>(1910)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7293110" title="多线程获取线程返回值---Future And CompletionService">多线程获取线程返回值---Future And CompletionService</a><span>(1769)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7713741" title="早起的鸟儿有虫吃---页面模块上移下移">早起的鸟儿有虫吃---页面模块上移下移</a><span>(1739)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7456096" title="Synchronized和Static Synchronized区别">Synchronized和Static Synchronized区别</a><span>(1550)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7304304" title="Java多线程下载文件">Java多线程下载文件</a><span>(1287)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7765411" title="MySql连接查询精解">MySql连接查询精解</a><span>(1250)</span>
+</li>
+<li>
+<a href="/liovey/article/details/8042541" title="事务并发调度之封锁技术">事务并发调度之封锁技术</a><span>(1125)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7965244" title="项目尾声的反思">项目尾声的反思</a><span>(983)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7669156" title="灵活运用数据库主外键">灵活运用数据库主外键</a><span>(951)</span>
+</li>
+</ul>
+</div>
+<div id="hotarticls2" class="panel">
+<ul class="panel_head"><span>评论排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="/liovey/article/details/14149137" title="Spring事务传播特性实例解析">Spring事务传播特性实例解析</a><span>(38)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7651000" title="我们可能无法意识到的敌人---思想上的懒惰">我们可能无法意识到的敌人---思想上的懒惰</a><span>(29)</span>
+</li>
+<li>
+<a href="/liovey/article/details/8042541" title="事务并发调度之封锁技术">事务并发调度之封锁技术</a><span>(24)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7965244" title="项目尾声的反思">项目尾声的反思</a><span>(15)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7765411" title="MySql连接查询精解">MySql连接查询精解</a><span>(15)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7456096" title="Synchronized和Static Synchronized区别">Synchronized和Static Synchronized区别</a><span>(14)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7669156" title="灵活运用数据库主外键">灵活运用数据库主外键</a><span>(14)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7304304" title="Java多线程下载文件">Java多线程下载文件</a><span>(12)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7834813" title="统计性能优化思路">统计性能优化思路</a><span>(12)</span>
+</li>
+<li>
+<a href="/liovey/article/details/7288983" title="JAVA5线程池使用">JAVA5线程池使用</a><span>(8)</span>
+</li>
+</ul>
+</div>
+<div id="homepageArticles" class="panel tracking-ad" data-mod="popu_4">
+<ul class="panel_head"><span>推荐文章</span></ul>
+<ul class="panel_body" id="ad_commend"></ul>
+</div>
+<script type="text/javascript">
+ new Ad(12, 'ad_commend');
+</script><div id="custom_column_19862092" class="panel">
+<ul class="panel_head"><span>资源分享</span></ul>
+<ul class="panel_body">
+
+<a href="http://e.weibo.com/taobaodeveloperclub?ref=http%3A%2F%2Fwww.iteye.com%2Ftopic%2F1123010">技术嘉年华</a>
+<p></p>
+<a href="http://www.programmer.com.cn/">程序员</a>
+<p></p>
+<a href="http://blog.csdn.net/jiangtao/article/details/7213807">健身锻炼 </a>
+<p></p>
+<a href="http://www.uml.com.cn/">技能培训，火龙果</a>
+<p></p>
+<p><a href="http://club.topsage.com/">大家论坛</a></p>
+<p><a href="http://blog.sina.com.cn/s/blog_723fc3030100tnc8.html">项目管理</a></p>
+<a href="http://www.open-open.com/">开源</a>
+<p><a href="http://blog.csdn.net/dyllove98/article/details/7488780">千万级数据</a></p>
+
+</ul>
+</div><div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body itemlist">
+    <li>
+    <a href="/lb85858585/article/details/14149137#comments">Spring事务传播特性实例解析</a>
+    <p style="margin:0px;"><a href="/netBananaHOT" class="user_name">netBananaHOT</a>:
+受教育了
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/14149137#comments">Spring事务传播特性实例解析</a>
+    <p style="margin:0px;"><a href="/liu765023051" class="user_name">liu765023051</a>:
+mark一下，很棒的技术文章分享。
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/14149137#comments">Spring事务传播特性实例解析</a>
+    <p style="margin:0px;"><a href="/stream_liuxia" class="user_name">stream_liuxia</a>:
+学习学习了
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/14149137#comments">Spring事务传播特性实例解析</a>
+    <p style="margin:0px;"><a href="/facetoqiang" class="user_name">facetoqiang</a>:
+起初是在Service层一个方法完成后调用另一个方法，但是不行。最后没办法只能在Action层在第一...
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/14149137#comments">Spring事务传播特性实例解析</a>
+    <p style="margin:0px;"><a href="/u011191463" class="user_name">u011191463</a>:
+说的挺好的，我收藏了
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/14149137#comments">Spring事务传播特性实例解析</a>
+    <p style="margin:0px;"><a href="/lb85858585" class="user_name">lb85858585</a>:
+@facetoqiang:配置好传播特性就可以保证事务
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/14149137#comments">Spring事务传播特性实例解析</a>
+    <p style="margin:0px;"><a href="/facetoqiang" class="user_name">facetoqiang</a>:
+现在在做新功能扩充，同样是Spring和Hibernate整合时出现的事务问题，重新翻看你的博文学习...
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/7288983#comments">JAVA5线程池使用</a>
+    <p style="margin:0px;"><a href="/lb85858585" class="user_name">lb85858585</a>:
+@u010323779:好的，貌似写错字了
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/7288983#comments">JAVA5线程池使用</a>
+    <p style="margin:0px;"><a href="/u010323779" class="user_name">u010323779</a>:
+@lb85858585:刘波哥，你能关注一下我么，我想给你发私信，但是必须要互相关注才能发，想请教你...
+    </p>
+    </li>
+    <li>
+    <a href="/lb85858585/article/details/7288983#comments">JAVA5线程池使用</a>
+    <p style="margin:0px;"><a href="/lb85858585" class="user_name">lb85858585</a>:
+@u010323779:好呀，以后多沟通，呵呵
+    </p>
+    </li>
+</ul>
+</div>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+            <div class="clear">
+            </div>
+        </div>
+        
+
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/newblog.min.js"></script>
+<script type="text/javascript" src="http://medal.blog.csdn.net/showblogmedal.ashx?blogid=893032"></script>
+<script type="text/javascript">
+    document.write('<script type="text/javascript" src="http://csdnimg.cn/pubfooter/js/publib_footer.js?' + Math.floor(new Date() / 120000).toString(36) + '="></' + 'script>');
+</script>
+    <script type="text/javascript" src="http://pass.csdn.net/content/loginbox/login.js"></script>
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script>
+<script type="text/javascript" src="http://www.csdn.net/ui/scripts/Csdn/counter.js"></script>
+<script type="text/javascript" src="http://ad.csdn.net/scripts/ad-blog.js"></script>
+<script type="text/javascript" src="http://zz.csdn.net/js/count.js"></script>
+<script type="text/javascript">
+    $(function () {
+        function __get_code_toolbar(snippet_id) {
+            return $("<a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "' target='_blank' title='在CODE上查看代码片' style='text-indent:0;'><img src='https://code.csdn.net/assets/CODE_ico.png' width=12 height=12 alt='在CODE上查看代码片' style='position:relative;top:1px;left:2px;'/></a>"
+                    + "<a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "/fork' target='_blank' title='派生到我的代码片'  style='text-indent:0;'><img src='https://code.csdn.net/assets/ico_fork.svg' width=12 height=12 alt='派生到我的代码片' style='position:relative;top:2px;left:2px;'/></a>");
+        }
+        
+        $("[code_snippet_id]").each(function () {
+            __s_id = $(this).attr("code_snippet_id");
+            if (__s_id != null && __s_id != "" && __s_id != 0 && parseInt(__s_id) > 70020) {
+                __code_tool = __get_code_toolbar(__s_id);
+                $(this).prev().find(".tools").append(__code_tool);
+            }
+        });
+    });
+</script>
+
+    </div>
+</body>
+</html>
